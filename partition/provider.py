@@ -18,7 +18,7 @@ import h5py
 from sklearn.neighbors import NearestNeighbors
 sys.path.append("./ply_c")
 sys.path.append("./partition/ply_c")
-import libply_c
+import ply_c.libply_c
 import colorsys
 #------------------------------------------------------------------------------
 def partition2ply(filename, xyz, components):

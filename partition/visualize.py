@@ -25,7 +25,7 @@ parser.add_argument('--output_type', default='igfpres', help='which cloud to out
 args = parser.parse_args()
 #---path to data---------------------------------------------------------------
 #root of the data directory
-root = args.ROOT_PATH+'/'
+root = args.ROOT_PATH+"/"
 rgb_out = 'i' in args.output_type
 gt_out  = 'g' in args.output_type
 fea_out = 'f' in args.output_type
