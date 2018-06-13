@@ -1,0 +1,7 @@
+# init files
+cut-poursuit/
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+libply_c.so
+Makefile
