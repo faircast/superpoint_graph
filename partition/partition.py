@@ -4,14 +4,18 @@
     2017 Loic Landrieu, Martin Simonovsky
     Script for partioning into simples shapes
 """
+import os
 import os.path
 import sys
 import numpy as np
 import argparse
 from timeit import default_timer as timer
-sys.path.append("./partition/cut-pursuit/src")
-sys.path.append("./partition/ply_c")
-sys.path.append("./partition")
+sys.path.append(os.path.join(os.environ["POINTSCLOUDHOME"],
+                          "superpoint_graph/partition/cut-pursuit/src"))
+sys.path.append(os.path.join(os.environ["POINTSCLOUDHOME"],
+                             "superpoint_graph/partition/ply_c"))
+sys.path.append(os.path.join(os.environ["POINTSCLOUDHOME"],
+                             "superpoint_graph/partition/."))
 import libcp
 import libply_c
 from graphs import *
@@ -40,7 +44,8 @@ elif args.dataset == 'sema3d':
     folders = ["test_reduced/", "test_full/", "train/"]
     n_labels = 8
 elif args.dataset == 'custom_dataset':
-    folders = ["train/", "test/"]
+    # folders = ["train/", "test/"] #preprocess only the test dataset (ONERD)
+    folders = ["test/"] 
     n_labels = 10 #number of classes
 else:
     raise ValueError('%s is an unknown data set' % dataset)
@@ -78,9 +83,10 @@ for folder in folders:
         files = glob.glob(data_folder+"*.txt")
     elif args.dataset=='custom_dataset':
         #list all ply files in the folder
-        files = glob.glob(data_folder+"*.ply")
+        #files = glob.glob(data_folder+"*.ply")
         #list all las files in the folder
-        files = glob.glob(data_folder+"*.las")
+        #files = glob.glob(data_folder+"*.las")
+        files = glob.glob(data_folder+"*.txt")
         
     if (len(files) == 0):
         raise ValueError('%s is empty' % data_folder)
@@ -133,16 +139,23 @@ for folder in folders:
             elif args.dataset=='custom_dataset':
                 #implement in provider.py your own read_custom_format outputing xyz, rgb, labels
                 #example for ply files
-                xyz, rgb, labels = read_ply(data_file)
+                # xyz, rgb, labels = read_ply(data_file)
+
+                # The formating of our data is the same than the s3dis one
+                # no labels are specified
+                xyz, rgb, labels = read_s3dis_format(data_file)
+                
                 #another one for las files without rgb
-                xyz = read_las(data_file)
+                # xyz = read_las(data_file)
+
                 if args.voxel_width > 0:
                     #an example of pruning without labels
-                    xyz, rgb, labels = libply_c.prune(xyz, args.voxel_width, rgb, np.array(1,dtype='u1'), 0)
+                    xyz, rgb, labels = libply_c.prune(xyz, args.voxel_width, rgb, [], 0)
                     #another one without rgb information nor labels
-                    xyz = libply_c.prune(xyz, args.voxel_width, np.zeros(xyz.shape,dtype='u1'), np.array(1,dtype='u1'), 0)[0]
+                    # xyz = libply_c.prune(xyz, args.voxel_width, np.zeros(xyz.shape,dtype='u1'), np.array(1,dtype='u1'), 0)[0]
                 #if no labels available simply set here labels = []
                 #if no rgb available simply set here rgb = [] and make sure to not use it later on
+                
             start = timer()
             #---compute 10 nn graph-------
             graph_nn, target_fea = compute_graph_nn_2(xyz, args.k_nn_adj, args.k_nn_geof)
@@ -165,12 +178,12 @@ for folder in folders:
                 features = np.hstack((geof, rgb/255.)).astype('float32')#add rgb as a feature for partitioning
                 features[:,3] = 2. * features[:,3] #increase importance of verticality (heuristic)
             elif args.dataset=='sema3d':
-                 features = geof
-                 geof[:,3] = 2. * geof[:, 3]
+                features = geof
+                geof[:,3] = 2. * geof[:, 3]
             elif args.dataset=='custom_dataset':
                 #choose here which features to use for the partition
-                 features = geof
-                 geof[:,3] = 2. * geof[:, 3]
+                features = np.hstack((geof, rgb/255.)).astype('float32') #same feature than s3dis
+                features[:,3] = 2. * features[:, 3]
                 
             graph_nn["edge_weight"] = np.array(1. / ( args.lambda_edge_weight + graph_nn["distances"] / np.mean(graph_nn["distances"])), dtype = 'float32')
             print("        minimal partition...")
