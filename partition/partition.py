@@ -46,7 +46,7 @@ elif args.dataset == 'sema3d':
 elif args.dataset == 'custom_dataset':
     # folders = ["train/", "test/"] #preprocess only the test dataset (ONERD)
     folders = ["test/"] 
-    n_labels = 10 #number of classes
+    n_labels = 13 #number of classes
 else:
     raise ValueError('%s is an unknown data set' % dataset)
 
@@ -110,7 +110,7 @@ for folder in folders:
             spg_file   = spg_folder  + file_name_short + '.h5'
         elif args.dataset=='custom_dataset':
             #adapt to your hierarchy. The following 4 files must be defined
-            data_file   = data_folder      + file_name + '.ply' #or .las
+            data_file   = data_folder      + file_name + '.txt' #.ply or .las
             cloud_file  = cloud_folder     + file_name
             fea_file    = fea_folder       + file_name + '.h5'
             spg_file    = spg_folder       + file_name + '.h5'
@@ -142,20 +142,21 @@ for folder in folders:
                 # xyz, rgb, labels = read_ply(data_file)
 
                 # The formating of our data is the same than the s3dis one
-                # no labels are specified
-                xyz, rgb, labels = read_s3dis_format(data_file)
+                # xyz, rgb, labels = read_s3dis_format(data_file)
+                xyz, rgb = read_s3dis_format(data_file, False)
                 
                 #another one for las files without rgb
                 # xyz = read_las(data_file)
-
+                
                 if args.voxel_width > 0:
                     #an example of pruning without labels
-                    xyz, rgb, labels = libply_c.prune(xyz, args.voxel_width, rgb, [], 0)
+                    xyz, rgb, labels = libply_c.prune(xyz, args.voxel_width, rgb, np.array(1,dtype='u1'), 0)
                     #another one without rgb information nor labels
                     # xyz = libply_c.prune(xyz, args.voxel_width, np.zeros(xyz.shape,dtype='u1'), np.array(1,dtype='u1'), 0)[0]
                 #if no labels available simply set here labels = []
                 #if no rgb available simply set here rgb = [] and make sure to not use it later on
-                
+                labels = []
+
             start = timer()
             #---compute 10 nn graph-------
             graph_nn, target_fea = compute_graph_nn_2(xyz, args.k_nn_adj, args.k_nn_geof)
