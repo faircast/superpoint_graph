@@ -135,7 +135,7 @@ for folder in folders:
                     xyz, rgb, labels = read_semantic3d_format(data_file, n_labels, label_file, args.voxel_width, args.ver_batch)
                 else:
                     xyz, rgb = read_semantic3d_format(data_file, 0, '', args.voxel_width, args.ver_batch)
-                    labels = []
+
             elif args.dataset=='custom_dataset':
                 #implement in provider.py your own read_custom_format outputing xyz, rgb, labels
                 #example for ply files
@@ -143,7 +143,7 @@ for folder in folders:
 
                 # The formating of our data is the same than the s3dis one
                 # xyz, rgb, labels = read_s3dis_format(data_file)
-                xyz, rgb = read_s3dis_format(data_file, False)
+                xyz, rgb, labels = read_s3dis_format(data_file)
                 
                 #another one for las files without rgb
                 # xyz = read_las(data_file)

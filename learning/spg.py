@@ -49,8 +49,11 @@ def spg_edge_features(edges, node_att, edge_att, args):
     return np.concatenate(columns, axis=1).astype(np.float32)
 
 def scaler01(trainlist, testlist, transform_train=True):
-    """ Scale edge features to 0 mean 1 stddev """
-    edge_feats = np.concatenate([ trainlist[i][3] for i in range(len(trainlist)) ], 0)
+    """ Scale edge features to 0 mean 1 stddev 
+
+    *** the edge feats is fixed on the test set because there is no training set
+    """
+    edge_feats = np.concatenate([ testlist[i][3] for i in range(len(testlist)) ], 0)
     scaler = preprocessing.StandardScaler().fit(edge_feats)
 
     if transform_train:

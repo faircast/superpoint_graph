@@ -25,18 +25,21 @@ import spg
 
 
 def get_datasets(args, test_seed_offset=0):
-    """build training and testing set"""
+    """build training and testing set
+
+    For the ONERD, only the test dataset is available
+    """
     
     #for a simple train/test organization
-    trainset = ['train/' + f for f in os.listdir(args.CUSTOM_SET_PATH + '/superpoint_graphs/train')]
-    testset  = ['test/' + f for f in os.listdir(args.CUSTOM_SET_PATH + '/superpoint_graphs/train')]
+    # trainset = ['train/' + f for f in os.listdir(args.CUSTOM_SET_PATH + '/superpoint_graphs/train')]
+    testset  = ['test/' + f for f in os.listdir(args.CUSTOM_SET_PATH + '/superpoint_graphs/test')]
     
     # Load superpoints graphs
     testlist, trainlist = [], []
-    for n in trainset:
-        trainlist.append(spg.spg_reader(args, args.CUSTOM_SET_PATH + '/superpoint_graphs/' + n + '.h5', True))
+    # for n in trainset:
+        # trainlist.append(spg.spg_reader(args, args.CUSTOM_SET_PATH + '/superpoint_graphs/' + n + '.h5', True))
     for n in testset:
-        testlist.append(spg.spg_reader(args, args.CUSTOM_SET_PATH + '/superpoint_graphs/' + n + '.h5', True))
+        testlist.append(spg.spg_reader(args, args.CUSTOM_SET_PATH + '/superpoint_graphs/' + n, True))
 
     # Normalize edge features
     if args.spg_attribs01:
@@ -57,16 +60,20 @@ def get_info(args):
             edge_feats += 1
 
     return {
-        'node_feats': 11 if args.pc_attribs=='' else len(args.pc_attribs),
+        'node_feats': 14 if args.pc_attribs=='' else len(args.pc_attribs),
         'edge_feats': edge_feats,
-        'classes': 10, #CHANGE TO YOUR NUMBER OF CLASS
-        'inv_class_map': {0:'class_A', 1:'class_B'}, #etc...
+        'classes': 13, #CHANGE TO YOUR NUMBER OF CLASS
+        'inv_class_map': {0:'ceiling', 1:'floor', 2:'wall', 3:'column', 4:'beam', 5:'window', 6:'door', 7:'table', 8:'chair', 9:'bookcase', 10:'sofa', 11:'board', 12:'clutter'},
     }
 
 def preprocess_pointclouds(SEMA3D_PATH):
-    """ Preprocesses data by splitting them by components and normalizing."""
+    """ Preprocesses data by splitting them by components and normalizing.
 
-    for n in ['train', 'test_reduced', 'test_full']:
+    *** Here we only select the test dataset to create the parsed folder
+    """
+
+    # for n in ['train', 'test_reduced', 'test_full']:
+    for n in ['test']:
         pathP = '{}/parsed/{}/'.format(SEMA3D_PATH, n)
         pathD = '{}/features/{}/'.format(SEMA3D_PATH, n)
         pathC = '{}/superpoint_graphs/{}/'.format(SEMA3D_PATH, n)

@@ -154,7 +154,10 @@ def main():
 
     ############
     def train():
-        """ Trains for one epoch """
+        """ Trains for one epoch
+
+        Do not run train for the ONERD, there is no training dataset.
+        """
         model.train()
 
         loader = torch.utils.data.DataLoader(train_dataset, batch_size=args.batch_size, collate_fn=spg.eccpc_collate, num_workers=args.nworkers, shuffle=True, drop_last=True)
