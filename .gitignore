@@ -5,3 +5,4 @@ CMakeFiles/
 cmake_install.cmake
 libply_c.so
 Makefile
+__pycache__/
