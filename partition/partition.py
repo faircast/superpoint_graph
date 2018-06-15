@@ -43,9 +43,11 @@ if args.dataset == 's3dis':
 elif args.dataset == 'sema3d':
     folders = ["test_reduced/", "test_full/", "train/"]
     n_labels = 8
+elif args.dataset == 'onerd':
+    folders = ["test/"]
+    n_labels = 13 #preprocess only the test dataset (ONERD)
 elif args.dataset == 'custom_dataset':
-    # folders = ["train/", "test/"] #preprocess only the test dataset (ONERD)
-    folders = ["test/"] 
+    folders = ["train/", "test/"] 
     n_labels = 13 #number of classes
 else:
     raise ValueError('%s is an unknown data set' % dataset)
@@ -81,12 +83,13 @@ for folder in folders:
                 if os.path.isdir(os.path.join(data_folder,o))]
     elif args.dataset=='sema3d':
         files = glob.glob(data_folder+"*.txt")
+    elif args.dataset=='onerd':
+        files = glob.glob(data_folder+"*.txt")
     elif args.dataset=='custom_dataset':
         #list all ply files in the folder
-        #files = glob.glob(data_folder+"*.ply")
+        files = glob.glob(data_folder+"*.ply")
         #list all las files in the folder
-        #files = glob.glob(data_folder+"*.las")
-        files = glob.glob(data_folder+"*.txt")
+        files = glob.glob(data_folder+"*.las")
         
     if (len(files) == 0):
         raise ValueError('%s is empty' % data_folder)
@@ -108,6 +111,11 @@ for folder in folders:
             cloud_file = cloud_folder+ file_name_short
             fea_file   = fea_folder  + file_name_short + '.h5'
             spg_file   = spg_folder  + file_name_short + '.h5'
+        elif args.dataset=='onerd':
+            data_file   = data_folder      + file_name + '.txt'
+            cloud_file  = cloud_folder     + file_name
+            fea_file    = fea_folder       + file_name + '.h5'
+            spg_file    = spg_folder       + file_name + '.h5'
         elif args.dataset=='custom_dataset':
             #adapt to your hierarchy. The following 4 files must be defined
             data_file   = data_folder      + file_name + '.txt' #.ply or .las
@@ -136,15 +144,22 @@ for folder in folders:
                 else:
                     xyz, rgb = read_semantic3d_format(data_file, 0, '', args.voxel_width, args.ver_batch)
 
+            elif args.dataset=='onerd':
+                xyz, rgb, labels = read_s3dis_format(data_file) # The format of the onerd is the same than s3d
+                
+                if args.voxel_width > 0:
+                    xyz, rgb, labels = libply_c.prune(xyz, args.voxel_width, rgb, np.array(1,dtype='u1'), 0)
+
+                labels = []
+                
             elif args.dataset=='custom_dataset':
                 #implement in provider.py your own read_custom_format outputing xyz, rgb, labels
                 #example for ply files
-                # xyz, rgb, labels = read_ply(data_file)
+                xyz, rgb, labels = read_ply(data_file)
 
                 # The formating of our data is the same than the s3dis one
                 # xyz, rgb, labels = read_s3dis_format(data_file)
-                xyz, rgb, labels = read_s3dis_format(data_file)
-                
+                                
                 #another one for las files without rgb
                 # xyz = read_las(data_file)
                 
@@ -155,8 +170,7 @@ for folder in folders:
                     # xyz = libply_c.prune(xyz, args.voxel_width, np.zeros(xyz.shape,dtype='u1'), np.array(1,dtype='u1'), 0)[0]
                 #if no labels available simply set here labels = []
                 #if no rgb available simply set here rgb = [] and make sure to not use it later on
-                labels = []
-
+                
             start = timer()
             #---compute 10 nn graph-------
             graph_nn, target_fea = compute_graph_nn_2(xyz, args.k_nn_adj, args.k_nn_geof)
@@ -181,6 +195,10 @@ for folder in folders:
             elif args.dataset=='sema3d':
                 features = geof
                 geof[:,3] = 2. * geof[:, 3]
+            elif args.dataset=='onerd':
+                #choose here which features to use for the partition
+                features = np.hstack((geof, rgb/255.)).astype('float32') #same feature than s3dis
+                features[:,3] = 2. * features[:, 3]
             elif args.dataset=='custom_dataset':
                 #choose here which features to use for the partition
                 features = np.hstack((geof, rgb/255.)).astype('float32') #same feature than s3dis
