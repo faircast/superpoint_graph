@@ -41,7 +41,7 @@ if args.dataset == 's3dis':
 if args.dataset == 'sema3d':
     n_labels = 8    
 if args.dataset == 'custom_dataset':
-    n_labels = 10    
+    n_labels = 13
 #---load the values------------------------------------------------------------
 fea_file   = root + "features/"          + folder + file_name + '.h5'
 spg_file   = root + "superpoint_graphs/" + folder + file_name + '.h5'

@@ -52,8 +52,13 @@ def geof2ply(filename, xyz, geof):
 #------------------------------------------------------------------------------
 def prediction2ply(filename, xyz, prediction, n_label, dataset):
     """write a ply with colors for each class"""
-    if len(prediction.shape) > 1 and prediction.shape[1] > 1:
-        prediction = np.argmax(prediction, axis = 1)
+    if not isinstance(prediction, list):
+        if len(prediction.shape) > 1 and prediction.shape[1] > 1:
+            prediction = np.argmax(prediction, axis=1)
+    else:
+        if len(prediction) > 1:
+            prediction = np.argmax(prediction, axis=1)
+
     color = np.zeros(xyz.shape)
     for i_label in range(0, n_label + 1):
         color[np.where(prediction == i_label), :] = get_color_from_label(i_label, dataset)
@@ -68,10 +73,20 @@ def prediction2ply(filename, xyz, prediction, n_label, dataset):
 #------------------------------------------------------------------------------
 def error2ply(filename, xyz, rgb, labels, prediction):
     """write a ply with green hue for correct classifcation and red for error"""
-    if len(prediction.shape) > 1 and prediction.shape[1] > 1:
-        prediction = np.argmax(prediction, axis = 1)
-    if len(labels.shape) > 1 and labels.shape[1] > 1:
-        labels = np.argmax(labels, axis = 1)
+    if not isinstance(prediction, list):
+        if len(prediction.shape) > 1 and prediction.shape[1] > 1:
+            prediction = np.argmax(prediction, axis=1)
+    else:
+        if len(prediction) > 1:
+            prediction = np.argmax(predictioon, axis=1)
+
+    if not isinstance(labels, list):
+        if len(labels.shape) > 1 and labels.shape[1] > 1:
+            labels = np.argmax(labels, axis = 1)
+    else:
+        if len(labels) > 1:
+            labels = np.argmax(labels, axis=1)
+
     color_rgb = rgb/255;
     for i_ver in range(0, len(labels)):
         
