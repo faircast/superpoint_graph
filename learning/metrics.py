@@ -15,6 +15,10 @@ class ConfusionMatrix:
 
   def count_predicted_batch(self, ground_truth_vec, predicted): # added
     for i in range(ground_truth_vec.shape[0]):
+      print("**********")
+      print(predicted.shape)
+      print(ground_truth_vec.shape)
+      import ipdb; ipdb.set_trace()
       self.confusion_matrix[:,predicted[i]] += ground_truth_vec[i,:]
 
   """labels are integers from 0 to number_of_labels-1"""
