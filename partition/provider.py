@@ -137,11 +137,22 @@ def get_color_from_label(object_label, dataset):
             7: [   0, 255, 255], #'artifact'   ->  cyan
             8: [ 255,   8, 127], #'cars'  ->  pink
             }.get(object_label, -1)
-    elif (dataset == 'custom_dataset'): #Custom set
+    elif (dataset == 'custom_dataset'): #Custom set (similar to s3dis)
         object_label =  {
             0: [0   ,   0,   0], #unlabelled .->. black
-            1: [ 255, 0, 0], #'classe A' -> red
-            2: [ 0, 255, 0], #'classeB' -> green
+            1: [ 233, 229, 107], #'ceiling' .-> .yellow
+            2: [  95, 156, 196], #'floor' .-> . blue
+            3: [ 179, 116,  81], #'wall'  ->  brown
+            4: [  81, 163, 148], #'column'  ->  bluegreen
+            5: [ 241, 149, 131], #'beam'  ->  salmon
+            6: [  77, 174,  84], #'window'  ->  bright green
+            7: [ 108, 135,  75], #'door'   ->  dark green
+            8: [  79,  79,  76], #'table'  ->  dark grey
+            9: [  41,  49, 101], #'chair'  ->  darkblue
+            10: [223,  52,  52], #'bookcase'  ->  red
+            11: [ 89,  47,  95], #'sofa'  ->  purple
+            12: [ 81, 109, 114], #'board'   ->  grey
+            13: [233, 233, 229], #'clutter'  ->  light grey
             }.get(object_label, -1)
     else: 
         raise ValueError('Unknown dataset: %s' % (dataset))

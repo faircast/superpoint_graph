@@ -98,7 +98,11 @@ def preprocess_pointclouds(SEMA3D_PATH):
                 elpsv[:,1:] -= 0.5
                 rgb = rgb/255.0 - 0.5
 
-                P = np.concatenate([xyz, rgb, elpsv], axis=1)
+                # Need to be add, similar to s3d
+                ma, mi = np.max(xyz,axis=0,keepdims=True), np.min(xyz,axis=0,keepdims=True)
+                xyzn = (xyz - mi) / (ma - mi + 1e-8)   # as in PointNet ("normalized location as to the room (fr om 0 to 1)")  
+
+                P = np.concatenate([xyz, rgb, elpsv, xyzn], axis=1)
 
                 f = h5py.File(pathC + file, 'r')
                 numc = len(f['components'].keys())
