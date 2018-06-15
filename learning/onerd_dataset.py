@@ -30,14 +30,11 @@ def get_datasets(args, test_seed_offset=0):
     For the ONERD, only the test dataset is available
     """
     
-    #for a simple train/test organization
-    # trainset = ['train/' + f for f in os.listdir(args.CUSTOM_SET_PATH + '/superpoint_graphs/train')]
+    #for a simple test organization
     testset  = ['test/' + f for f in os.listdir(args.CUSTOM_SET_PATH + '/superpoint_graphs/test')]
     
     # Load superpoints graphs
     testlist, trainlist = [], []
-    # for n in trainset:
-        # trainlist.append(spg.spg_reader(args, args.CUSTOM_SET_PATH + '/superpoint_graphs/' + n + '.h5', True))
     for n in testset:
         testlist.append(spg.spg_reader(args, args.CUSTOM_SET_PATH + '/superpoint_graphs/' + n, True))
 
@@ -62,7 +59,7 @@ def get_info(args):
     return {
         'node_feats': 14 if args.pc_attribs=='' else len(args.pc_attribs),
         'edge_feats': edge_feats,
-        'classes': 13, #CHANGE TO YOUR NUMBER OF CLASS
+        'classes': 13, #Same classes then s3d dataset
         'inv_class_map': {0:'ceiling', 1:'floor', 2:'wall', 3:'column', 4:'beam', 5:'window', 6:'door', 7:'table', 8:'chair', 9:'bookcase', 10:'sofa', 11:'board', 12:'clutter'},
     }
 
@@ -72,7 +69,6 @@ def preprocess_pointclouds(SEMA3D_PATH):
     *** Here we only select the test dataset to create the parsed folder
     """
 
-    # for n in ['train', 'test_reduced', 'test_full']:
     for n in ['test']:
         pathP = '{}/parsed/{}/'.format(SEMA3D_PATH, n)
         pathD = '{}/features/{}/'.format(SEMA3D_PATH, n)
@@ -119,7 +115,7 @@ def preprocess_pointclouds(SEMA3D_PATH):
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description='Large-scale Point Cloud Semantic Segmentation with Superpoint Graphs')
-    parser.add_argument('--CUSTOM_SET_PATH', default='datasets/custom_set')
+    parser.add_argument('--CUSTOM_SET_PATH', default='datasets/onerd')
     args = parser.parse_args()
     preprocess_pointclouds(args.CUSTOM_SET_PATH)
 
