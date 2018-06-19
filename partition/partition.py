@@ -23,6 +23,7 @@ from provider import *
 
 parser = argparse.ArgumentParser(description='Large-scale Point Cloud Semantic Segmentation with Superpoint Graphs')
 parser.add_argument('--ROOT_PATH', default='datasets/s3dis')
+parser.add_argument('--extension_path', default='', help='extension to the root path to write results in different folders when you have multiple tests')
 parser.add_argument('--dataset', default='s3dis', help='s3dis/sema3d/your_dataset')
 parser.add_argument('--k_nn_geof', default=45, type=int, help='number of neighbors for the geometric features')
 parser.add_argument('--k_nn_adj', default=10, type=int, help='adjacency structure for the minimal partition')
@@ -35,16 +36,21 @@ parser.add_argument('--overwrite', default=0, type=int, help='Wether to read exi
 args = parser.parse_args()
 
 #path to data
+extension_path = args.extension_path
 root = args.ROOT_PATH+'/'
 #list of subfolders to be processed
 if args.dataset == 's3dis':
-    folders = ["Area_1/", "Area_2/", "Area_3/", "Area_4/", "Area_5/", "Area_6/"]
+    # folders = ["Area_1/", "Area_2/", "Area_3/", "Area_4/", "Area_5/", "Area_6/"]
+    folders = ["Area_custom/"] # *** Change folder for custom dataset (only one room)
     n_labels = 13
 elif args.dataset == 'sema3d':
     folders = ["test_reduced/", "test_full/", "train/"]
     n_labels = 8
 elif args.dataset == 'onerd':
     folders = ["test/"]
+    n_labels = 13 #preprocess only the test dataset (ONERD)
+elif args.dataset == 'onerd_formatted':
+    folders = ["formatted/"]
     n_labels = 13 #preprocess only the test dataset (ONERD)
 elif args.dataset == 'custom_dataset':
     folders = ["train/", "test/"] 
@@ -63,11 +69,16 @@ if not os.path.isdir(root + "superpoint_graphs"):
 
 for folder in folders:
     print("=================\n   "+folder+"\n=================")
-    
+
     data_folder = root   + "data/"              + folder
-    cloud_folder  = root + "clouds/"            + folder
-    fea_folder  = root   + "features/"          + folder
-    spg_folder  = root   + "superpoint_graphs/" + folder
+    if extension_path =='':
+        cloud_folder  = root + "clouds/"            + folder
+        fea_folder  = root   + "features/"          + folder
+        spg_folder  = root   + "superpoint_graphs/" + folder
+    else:
+        cloud_folder  = root + extension_path +  "/clouds/"            + folder
+        fea_folder  = root   + extension_path +  "/features/"          + folder
+        spg_folder  = root   + extension_path +  "/superpoint_graphs/" + folder
     if not os.path.isdir(data_folder):
         raise ValueError("%s does not exist" % data_folder)
         
@@ -84,6 +95,8 @@ for folder in folders:
     elif args.dataset=='sema3d':
         files = glob.glob(data_folder+"*.txt")
     elif args.dataset=='onerd':
+        files = glob.glob(data_folder+"*.txt")
+    elif args.dataset=='onerd_formatted':
         files = glob.glob(data_folder+"*.txt")
     elif args.dataset=='custom_dataset':
         #list all ply files in the folder
@@ -116,6 +129,11 @@ for folder in folders:
             cloud_file  = cloud_folder     + file_name
             fea_file    = fea_folder       + file_name + '.h5'
             spg_file    = spg_folder       + file_name + '.h5'
+        elif args.dataset=='onerd_formatted':
+            data_file   = data_folder      + file_name + '.txt'
+            cloud_file  = cloud_folder     + file_name
+            fea_file    = fea_folder       + file_name + '.h5'
+            spg_file    = spg_folder       + file_name + '.h5'            
         elif args.dataset=='custom_dataset':
             #adapt to your hierarchy. The following 4 files must be defined
             data_file   = data_folder      + file_name + '.txt' #.ply or .las
@@ -144,7 +162,7 @@ for folder in folders:
                 else:
                     xyz, rgb = read_semantic3d_format(data_file, 0, '', args.voxel_width, args.ver_batch)
 
-            elif args.dataset=='onerd':
+            elif args.dataset=='onerd' or args.dataset=='onerd_formatted':
                 xyz, rgb, labels = read_s3dis_format(data_file) # The format of the onerd is the same than s3d
                 
                 if args.voxel_width > 0:
@@ -195,7 +213,7 @@ for folder in folders:
             elif args.dataset=='sema3d':
                 features = geof
                 geof[:,3] = 2. * geof[:, 3]
-            elif args.dataset=='onerd':
+            elif args.dataset=='onerd' or args.dataset=='onerd_formatted':
                 #choose here which features to use for the partition
                 features = np.hstack((geof, rgb/255.)).astype('float32') #same feature than s3dis
                 features[:,3] = 2. * features[:, 3]

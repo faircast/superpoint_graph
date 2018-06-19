@@ -42,6 +42,8 @@ if args.dataset == 'sema3d':
     n_labels = 8    
 if args.dataset == 'onerd':
     n_labels = 13
+if args.dataset == 'onerd_formatted':
+    n_labels = 13
 if args.dataset == 'custom_dataset':
     n_labels = 13
 #---load the values------------------------------------------------------------
@@ -107,9 +109,16 @@ if res_out and bool(args.upsample):
     elif args.dataset=='sema3d':#really not recommended unless you are very confident in your hardware
         data_file  = data_folder + file_name + ".txt"
         xyz_up, rgb_up = read_semantic3d_format(data_file, 0, '', 0, args.ver_batch)
-    elif args.dataset=='onerd_dataset':
-        data_file  = data_folder + file_name + ".ply"
-        xyz_up, rgb_up = read_ply(data_file)
+    elif args.dataset=='onerd':
+        # data_file  = data_folder + file_name + ".ply"
+        # xyz_up, rgb_up = read_ply(data_file)
+        data_file   = root + 'data/' + folder + file_name + '/' + file_name + ".txt"
+        xyz_up, rgb_up = read_s3dis_format(data_file, False)
+    elif args.dataset=='onerd_formatted':
+        # data_file  = data_folder + file_name + ".ply"
+        # xyz_up, rgb_up = read_ply(data_file)
+        data_file   = root + 'data/' + folder + file_name + '/' + file_name + ".txt"
+        xyz_up, rgb_up = read_s3dis_format(data_file, False)
     elif args.dataset=='custom_dataset':
         data_file  = data_folder + file_name + ".ply"
         xyz_up, rgb_up = read_ply(data_file)

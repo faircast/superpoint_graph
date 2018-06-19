@@ -152,7 +152,7 @@ def get_color_from_label(object_label, dataset):
             7: [   0, 255, 255], #'artifact'   ->  cyan
             8: [ 255,   8, 127], #'cars'  ->  pink
             }.get(object_label, -1)
-    elif (dataset == 'onerd'): #onerd dataset (similar than s3d)
+    elif (dataset == 'onerd' or dataset == 'onerd_formatted'): #onerd dataset (similar than s3d)
         object_label =  {
             0: [0   ,   0,   0], #unlabelled .->. black
             1: [ 233, 229, 107], #'ceiling' .-> .yellow

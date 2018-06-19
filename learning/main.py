@@ -135,6 +135,10 @@ def main():
         import onerd_dataset
         dbinfo = onerd_dataset.get_info(args)
         create_dataset = onerd_dataset.get_datasets
+    elif args.dataset=='onerd_formatted':
+        import onerd_formatted_dataset
+        dbinfo = onerd_formatted_dataset.get_info(args)
+        create_dataset = onerd_formatted_dataset.get_datasets
     elif args.dataset=='custom_dataset':
         import custom_dataset #<- to write!
         dbinfo = custom_dataset.get_info(args)
