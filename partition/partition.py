@@ -43,6 +43,9 @@ if args.dataset == 's3dis':
     # folders = ["Area_1/", "Area_2/", "Area_3/", "Area_4/", "Area_5/", "Area_6/"]
     folders = ["Area_custom/"] # *** Change folder for custom dataset (only one room)
     n_labels = 13
+if args.dataset == 's3dis_formatted':
+    folders = ["Area_1/", "Area_2/", "Area_3/", "Area_4/", "Area_5/", "Area_6/"]
+    n_labels = 6
 elif args.dataset == 'sema3d':
     folders = ["test_reduced/", "test_full/", "train/"]
     n_labels = 8
@@ -92,6 +95,9 @@ for folder in folders:
     if args.dataset=='s3dis':    
         files = [os.path.join(data_folder, o) for o in os.listdir(data_folder) 
                 if os.path.isdir(os.path.join(data_folder,o))]
+    elif args.dataset=='s3dis_formatted':    
+        files = [os.path.join(data_folder, o) for o in os.listdir(data_folder) 
+                if os.path.isdir(os.path.join(data_folder,o))]
     elif args.dataset=='sema3d':
         files = glob.glob(data_folder+"*.txt")
     elif args.dataset=='onerd':
@@ -113,6 +119,11 @@ for folder in folders:
         file_name   = os.path.splitext(os.path.basename(file))[0]
         
         if args.dataset=='s3dis':
+            data_file   = data_folder      + file_name + '/' + file_name + ".txt"
+            cloud_file  = cloud_folder     + file_name
+            fea_file    = fea_folder       + file_name + '.h5'
+            spg_file    = spg_folder       + file_name + '.h5'
+        elif args.dataset=='s3dis_formatted':
             data_file   = data_folder      + file_name + '/' + file_name + ".txt"
             cloud_file  = cloud_folder     + file_name
             fea_file    = fea_folder       + file_name + '.h5'
@@ -154,6 +165,13 @@ for folder in folders:
                 xyz, rgb, labels = read_s3dis_format(data_file)
                 if args.voxel_width > 0:
                     xyz, rgb, labels = libply_c.prune(xyz, args.voxel_width, rgb, labels, n_labels)
+            elif args.dataset=='s3dis_formatted':
+                # S3D without RGB
+                xyz, labels = read_s3dis_formatted_format(data_file)
+                if args.voxel_width > 0:
+                    xyz, rgb, labels = libply_c.prune(xyz, args.voxel_width, np.zeros(xyz.shape,dtype='u1'), labels, n_labels)
+                rgb = []
+
             elif args.dataset=='sema3d':
                 label_file = data_folder + file_name + ".labels"
                 has_labels = (os.path.isfile(label_file))
@@ -210,6 +228,10 @@ for folder in folders:
             if args.dataset=='s3dis':
                 features = np.hstack((geof, rgb/255.)).astype('float32')#add rgb as a feature for partitioning
                 features[:,3] = 2. * features[:,3] #increase importance of verticality (heuristic)
+            elif args.dataset=='s3dis_formatted':
+                features = geof
+                geof[:,3] = 2. * geof[:,3] #increase importance of verticality (heuristic)
+
             elif args.dataset=='sema3d':
                 features = geof
                 geof[:,3] = 2. * geof[:, 3]

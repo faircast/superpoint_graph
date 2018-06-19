@@ -140,6 +140,15 @@ def get_color_from_label(object_label, dataset):
             12: [ 81, 109, 114], #'board'   ->  grey
             13: [233, 233, 229], #'clutter'  ->  light grey
             }.get(object_label, -1)
+    elif dataset == 's3dis_formatted': #S3DIS without RGB
+        object_label = {
+            0: [ 233, 233, 229], #'other'  ->  light grey
+            1: [ 233, 229, 107], #'ceiling' .-> .yellow
+            2: [  95, 156, 196], #'floor' .-> . blue
+            3: [ 179, 116,  81], #'wall'  ->  brown
+            4: [  77, 174,  84], #'window'  ->  bright green
+            5: [ 108, 135,  75] #'door'   ->  dark green
+            }.get(object_label, -1)
     elif (dataset == 'sema3d'): #Semantic3D
         object_label =  {
             0: [0   ,   0,   0], #unlabelled .->. black
@@ -219,6 +228,34 @@ def read_s3dis_format(raw_path, label_out=True):
         room_object_indices[obj_ind] = i_object
         i_object = i_object + 1
     return xyz, rgb, room_labels
+
+#------------------------------------------------------------------------------
+def read_s3dis_formatted_format(raw_path, label_out=True):
+#S3DIS specific
+    """extract data from a room folder"""
+    room_ver = genfromtxt(raw_path, delimiter=' ')
+    xyz = np.array(room_ver[:, 0:3], dtype='float32')
+    if not label_out:
+        return xyz
+    n_ver = len(room_ver)
+    del room_ver
+    nn = NearestNeighbors(1, algorithm='kd_tree').fit(xyz)
+    room_labels = np.zeros((n_ver,), dtype='uint8')
+    room_object_indices = np.zeros((n_ver,), dtype='uint32')
+    objects = glob.glob(os.path.dirname(raw_path) + "/Annotations/*.txt")
+    i_object = 0
+    for single_object in objects:
+        object_name = os.path.splitext(os.path.basename(single_object))[0]
+        print("        adding object " + str(i_object) + " : "  + object_name)
+        object_class = object_name.split('_')[0]
+        object_label = object_name_to_formatted_label(object_class)
+        obj_ver = genfromtxt(single_object, delimiter=' ')
+        distances, obj_ind = nn.kneighbors(obj_ver[:, 0:3])
+        room_labels[obj_ind] = object_label
+        room_object_indices[obj_ind] = i_object
+        i_object = i_object + 1
+    return xyz, room_labels
+
 #------------------------------------------------------------------------------
 def object_name_to_label(object_class):
     """convert from object name in S3DIS to an int"""
@@ -237,6 +274,18 @@ def object_name_to_label(object_class):
         'board': 12,
         'clutter': 13,
         'stairs': 0,
+        }.get(object_class, 0)
+    return object_label
+
+def object_name_to_formatted_label(object_class):
+    """convert from object name in S3DIS to an int"""
+    object_label = {
+        'other':0,
+        'ceiling': 1,
+        'floor': 2,
+        'wall': 3,
+        'window': 4,
+        'door': 5,
         }.get(object_class, 0)
     return object_label
 #------------------------------------------------------------------------------
