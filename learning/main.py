@@ -131,6 +131,10 @@ def main():
         import s3dis_dataset
         dbinfo = s3dis_dataset.get_info(args)
         create_dataset = s3dis_dataset.get_datasets
+    elif args.dataset=='s3dis_formatted':
+        import s3dis_formatted_dataset
+        dbinfo = s3dis_formatted_dataset.get_info(args)
+        create_dataset = s3dis_formatted_dataset.get_datasets
     elif args.dataset=='onerd':
         import onerd_dataset
         dbinfo = onerd_dataset.get_info(args)

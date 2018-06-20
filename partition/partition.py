@@ -157,7 +157,10 @@ for folder in folders:
         #--- build the geometric feature file h5 file ---
         if os.path.isfile(fea_file) and not args.overwrite:
             print("    reading the existing feature file...")
-            geof, xyz, rgb, graph_nn, labels = read_features(fea_file)
+            if args.dataset=='s3dis_formatted':
+                geof, xyz, graph_nn, labels = read_features(fea_file, isRGB=False)
+            else:
+                geof, xyz, rgb, graph_nn, labels = read_features(fea_file)
         else :
             print("    creating the feature file...")
             #--- read the data files and compute the labels---

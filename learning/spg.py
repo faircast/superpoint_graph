@@ -214,15 +214,24 @@ def load_superpoint(args, fname, id, train, test_seed_offset):
 
     if args.pc_attribs != '':
         columns = []
+        """
         if 'xyz' in args.pc_attribs: columns.append(P[:,:3])
         if 'rgb' in args.pc_attribs: columns.append(P[:,3:6])
         if 'e' in args.pc_attribs: columns.append(P[:,6,None])
         if 'lpsv' in args.pc_attribs: columns.append(P[:,7:11])
         if 'XYZ' in args.pc_attribs: columns.append(P[:,11:14])
+        """
+        # Specific to non RGB data
+        if 'xyz' in args.pc_attribs: columns.append(P[:,:3])
+        if 'e' in args.pc_attribs: columns.append(P[:,3,None])
+        if 'lpsv' in args.pc_attribs: columns.append(P[:,4:8])
+        if 'XYZ' in args.pc_attribs: columns.append(P[:,8:11])
+
         P = np.concatenate(columns, axis=1)
 
     if train:
         P = augment_cloud(P, args)
+
     return P, np.array([diameter], dtype=np.float32)
 
 

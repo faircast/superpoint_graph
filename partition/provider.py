@@ -341,6 +341,7 @@ def read_semantic3d_format(data_file, n_class, file_label_path, voxel_width, ver
         return xyz, rgb, labels
     else:
         return xyz, rgb
+
 #------------------------------------------------------------------------------
 def read_ply(filename):
     """convert from a ply file. include the label and the object number"""
@@ -367,6 +368,7 @@ def read_ply(filename):
             return xyz, rgb, labels
         except ValueError:
             return xyz, rgb
+
 #------------------------------------------------------------------------------
 def read_las(filename):
     """convert from a las file with no rgb"""
@@ -381,6 +383,7 @@ def read_las(filename):
     z = np.reshape(inFile.Z, (N_points,1))
     xyz = np.hstack((x,y,z)).astype('f4')
     return xyz
+
 #------------------------------------------------------------------------------
 def write_ply_obj(filename, xyz, rgb, labels, object_indices):
     """write into a ply file. include the label and the object number"""
@@ -396,6 +399,7 @@ def write_ply_obj(filename, xyz, rgb, labels, object_indices):
     vertex_all[prop[7][0]] = object_indices
     ply = PlyData([PlyElement.describe(vertex_all, 'vertex')], text=True)
     ply.write(filename)
+
 #------------------------------------------------------------------------------
 def write_ply_labels(filename, xyz, rgb, labels):
     """write into a ply file. include the label"""
@@ -409,6 +413,7 @@ def write_ply_labels(filename, xyz, rgb, labels):
     vertex_all[prop[6][0]] = labels
     ply = PlyData([PlyElement.describe(vertex_all, 'vertex')], text=True)
     ply.write(filename)
+
 #------------------------------------------------------------------------------
 def write_ply(filename, xyz, rgb):
     """write into a ply file"""
@@ -420,6 +425,7 @@ def write_ply(filename, xyz, rgb):
         vertex_all[prop[i_prop+3][0]] = rgb[:, i_prop]
     ply = PlyData([PlyElement.describe(vertex_all, 'vertex')], text=True)
     ply.write(filename)
+
 #------------------------------------------------------------------------------
 def write_features(file_name, geof, xyz, rgb, graph_nn, labels):
     """write the geometric features, labels and clouds in a h5 file"""
@@ -441,8 +447,9 @@ def write_features(file_name, geof, xyz, rgb, graph_nn, labels):
     else:
         data_file.create_dataset('labels', data=labels, dtype='uint8')
     data_file.close()
+
 #------------------------------------------------------------------------------
-def read_features(file_name):
+def read_features(file_name, isRGB=True):
     """read the geometric features, clouds and labels from a h5 file"""
     data_file = h5py.File(file_name, 'r')
     #fist get the number of vertices
@@ -461,7 +468,8 @@ def read_features(file_name):
     geof[:, 2] = data_file["scattering"]
     geof[:, 3] = data_file["verticality"]
     xyz = data_file["xyz"][:]
-    rgb = data_file["rgb"][:]
+    if isRGB:
+        rgb = data_file["rgb"][:]
     source = data_file["source"][:]
     target = data_file["target"][:]
     distances = data_file["distances"][:]
@@ -470,7 +478,11 @@ def read_features(file_name):
     graph_nn["source"] = source
     graph_nn["target"] = target
     graph_nn["distances"] = distances
-    return geof, xyz, rgb, graph_nn, labels
+    if isRGB:
+        return geof, xyz, rgb, graph_nn, labels
+    else:
+        return geof, xyz, graph_nn, labels
+
 #------------------------------------------------------------------------------
 def write_spg(file_name, graph_sp, components, in_component):
     """save the partition and spg information"""
