@@ -38,6 +38,8 @@ file_name = os.path.split(args.file_path)[1]
 
 if args.dataset == 's3dis':
     n_labels = 13
+if args.dataset == 's3dis_formatted':
+    n_labels = 5
 if args.dataset == 'sema3d':
     n_labels = 8    
 if args.dataset == 'onerd':
@@ -56,8 +58,12 @@ if not os.path.isdir(ply_folder ):
     os.mkdir(ply_folder)
 if (not os.path.isfile(fea_file)) :
     raise ValueError("%s does not exist and is needed" % fea_file)
-    
-geof, xyz, rgb, graph_nn, labels = read_features(fea_file)
+
+# Compute features for non RGB dataset
+if args.dataset == 's3dis_formatted':
+    geof, xyz, graph_nn, labels = read_features(fea_file, isRGB=False)
+else:
+    geof, xyz, rgb, graph_nn, labels = read_features(fea_file)
 
 if (par_out or res_out) and (not os.path.isfile(spg_file)):    
     raise ValueError("%s does not exist and is needed to output the partition  or result ply" % spg_file) 
@@ -106,6 +112,9 @@ if res_out and bool(args.upsample):
     if args.dataset=='s3dis':
         data_file   = root + 'data/' + folder + file_name + '/' + file_name + ".txt"
         xyz_up, rgb_up = read_s3dis_format(data_file, False)
+    elif args.dataset=='s3dis_formatted':
+        data_file   = root + 'data/' + folder + file_name + '/' + file_name + ".txt"
+        xyz_up = read_s3dis_formatted_format(data_file, False)
     elif args.dataset=='sema3d':#really not recommended unless you are very confident in your hardware
         data_file  = data_folder + file_name + ".txt"
         xyz_up, rgb_up = read_semantic3d_format(data_file, 0, '', 0, args.ver_batch)
@@ -126,3 +135,5 @@ if res_out and bool(args.upsample):
     pred_up = interpolate_labels(xyz_up, xyz, pred_full, args.ver_batch)
     print("writing the upsampled prediction file...")
     prediction2ply(ply_file + "_pred_up.ply", xyz_up, pred_up+1, n_labels, args.dataset)
+
+    
