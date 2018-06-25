@@ -39,7 +39,7 @@ file_name = os.path.split(args.file_path)[1]
 if args.dataset == 's3dis':
     n_labels = 13
 if args.dataset == 's3dis_formatted':
-    n_labels = 5
+    n_labels = 7
 if args.dataset == 'sema3d':
     n_labels = 8    
 if args.dataset == 'onerd':
@@ -79,6 +79,7 @@ if res_out or err_out:
         pred_full = reduced_labels2full(pred_red, components, len(xyz))
     except OSError:
         raise ValueError("%s does not exist in %s" % (folder + file_name, res_file))
+
 #---write the output clouds----------------------------------------------------
 if rgb_out:
     print("writing the RGB file...")
@@ -86,6 +87,9 @@ if rgb_out:
     
 if gt_out: 
     print("writing the GT file...")
+    # if args.dataset == 's3dis_formatted':
+        # prediction2ply(ply_file + "_GT.ply", xyz, labels, n_labels+1, args.dataset)
+    # else:
     prediction2ply(ply_file + "_GT.ply", xyz, labels, n_labels, args.dataset)
     
 if fea_out:

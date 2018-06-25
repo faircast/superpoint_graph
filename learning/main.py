@@ -182,6 +182,7 @@ def main():
 
         # iterate over dataset in batches
         for bidx, (targets, GIs, clouds_data) in enumerate(loader):
+            
             t_loader = 1000*(time.time()-t0)
 
             model.ecc.set_info(GIs, args.cuda)
@@ -194,18 +195,19 @@ def main():
 
             optimizer.zero_grad()
             t0 = time.time()
-
+            
             embeddings = ptnCloudEmbedder.run(model, *clouds_data)
             outputs = model.ecc(embeddings)
 
             loss = nn.functional.cross_entropy(outputs, Variable(label_mode))
             loss.backward()
+
             ptnCloudEmbedder.bw_hook()
 
             if args.grad_clip>0:
                 for p in model.parameters():
                     p.grad.data.clamp_(-args.grad_clip, args.grad_clip)
-            optimizer.step()
+                optimizer.step()
 
             t_trainer = 1000*(time.time()-t0)
             loss_meter.add(loss.data[0])
@@ -400,5 +402,6 @@ def meter_value(meter):
     return meter.value()[0] if meter.n>0 else 0
 
 
-if __name__ == "__main__": 
+if __name__ == "__main__":
+    os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
     main()

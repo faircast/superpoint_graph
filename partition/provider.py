@@ -59,10 +59,12 @@ def prediction2ply(filename, xyz, prediction, n_label, dataset):
         if len(prediction) > 1:
             prediction = np.argmax(prediction, axis=1)
 
+    
     color = np.zeros(xyz.shape)
-    for i_label in range(0, n_label + 1):
+    for i_label in range(0, n_label):
         color[np.where(prediction == i_label), :] = get_color_from_label(i_label, dataset)
     prop = [('x', 'f4'), ('y', 'f4'), ('z', 'f4'), ('red', 'u1'), ('green', 'u1'), ('blue', 'u1')]
+
     vertex_all = np.empty(len(xyz), dtype=prop)
     for i in range(0, 3):
         vertex_all[prop[i][0]] = xyz[:, i]
@@ -142,12 +144,13 @@ def get_color_from_label(object_label, dataset):
             }.get(object_label, -1)
     elif dataset == 's3dis_formatted': #S3DIS without RGB
         object_label = {
-            0: [ 233, 233, 229], #'other'  ->  light grey
-            1: [ 233, 229, 107], #'ceiling' .-> .yellow
-            2: [  95, 156, 196], #'floor' .-> . blue
-            3: [ 179, 116,  81], #'wall'  ->  brown
-            4: [  77, 174,  84], #'window'  ->  bright green
-            5: [ 108, 135,  75] #'door'   ->  dark green
+            0: [   0,   0,   0], #'unkown' -> black
+            1: [ 233, 233, 229], #'other'  ->  light grey
+            2: [ 233, 229, 107], #'ceiling' .-> .yellow
+            3: [  95, 156, 196], #'floor' .-> . blue
+            4: [ 179, 116,  81], #'wall'  ->  brown
+            5: [  77, 174,  84], #'window'  ->  bright green
+            6: [ 108, 135,  75], #'door'   ->  dark green
             }.get(object_label, -1)
     elif (dataset == 'sema3d'): #Semantic3D
         object_label =  {
@@ -280,12 +283,13 @@ def object_name_to_label(object_class):
 def object_name_to_formatted_label(object_class):
     """convert from object name in S3DIS to an int"""
     object_label = {
-        'other':0,
-        'ceiling': 1,
-        'floor': 2,
-        'wall': 3,
-        'window': 4,
-        'door': 5,
+        'unkown':0,
+        'other':1,
+        'ceiling': 2,
+        'floor': 3,
+        'wall': 4,
+        'window': 5,
+        'door': 6,
         }.get(object_class, 0)
     return object_label
 #------------------------------------------------------------------------------

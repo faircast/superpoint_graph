@@ -71,6 +71,7 @@ def spg_reader(args, fname, incl_dir_in_name=False):
         node_gt_size = f['sp_labels'][:].astype(np.int64) # column 0: no of unlabeled points, column 1+: no of labeled points per class
         node_gt = np.argmax(node_gt_size[:,1:], 1)[:,None]
         node_gt[node_gt_size[:,1:].sum(1)==0,:] = -100    # superpoints without labels are to be ignored in loss computation
+
     else:
         N = f['sp_point_count'].shape[0]
         node_gt_size = np.concatenate([f['sp_point_count'][:].astype(np.int64), np.zeros((N,8), dtype=np.int64)], 1)
