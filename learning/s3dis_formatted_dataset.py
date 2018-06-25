@@ -2,6 +2,9 @@
     Large-scale Point Cloud Semantic Segmentation with Superpoint Graphs
     http://arxiv.org/abs/1711.09869
     2017 Loic Landrieu, Martin Simonovsky
+
+Script to create a formatted dataset from preprocessed spg features and get informations about i 
+This script is inspired from the the s3dis_dataset.py script with less categories and without RGB data.
 """
 from __future__ import division
 from __future__ import print_function

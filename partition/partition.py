@@ -3,7 +3,16 @@
     http://arxiv.org/abs/1711.09869
     2017 Loic Landrieu, Martin Simonovsky
     Script for partioning into simples shapes
+
+This script creates the SPGs and the related features, the results are stored in .h5 files (superpoints, associated labels ...). Specific cases are separated for each dataset: creation of the directories, read the data, creation of the features.
+If you want to use a new dataset, you have to create a read_datasetname_format function in the provider.py script to format the features and the labels.
+By default, the 'custom_dataset' part is a template to start a new dataset with comments by the authors to help you. 
+WARNING: this part is RGB sensitive, to use a new non RGB dataset please look at the s3dis_formatted (dataset) implementation in this script.
+
+Note:
+ - the code is currently formatted to take the one_room dataset (with only a Custom Area), if you want to run the s3dis dataset, please uncomment the lines related to Area_{:d} and command thoserelated to Area_custom
 """
+
 import os
 import os.path
 import sys

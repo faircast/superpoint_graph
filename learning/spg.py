@@ -2,6 +2,9 @@
     Large-scale Point Cloud Semantic Segmentation with Superpoint Graphs
     http://arxiv.org/abs/1711.09869
     2017 Loic Landrieu, Martin Simonovsky
+
+This script is used to compute features and format the SPG to training and testing datasets
+WARNING: it is currently formatted to work on a dataset without RGB. If you want to use RGB data, uncomment the lines between 222 and 226 and comment the following ones.x
 """
 from __future__ import division
 from __future__ import print_function

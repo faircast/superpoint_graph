@@ -9,6 +9,9 @@ Created on Tue Mar 20 16:16:14 2018
     http://arxiv.org/abs/1711.09869
     2017 Loic Landrieu, Martin Simonovsky
     Template file for processing custome datasets
+
+Script to create a formatted dataset from preprocessed spg features and get informations about it
+This script is formatted to preprocess the one_room dataset features from spg without RGB data
 """
 from __future__ import division
 from __future__ import print_function

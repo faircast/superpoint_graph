@@ -3,8 +3,13 @@
     http://arxiv.org/abs/1711.09869
     2017 Loic Landrieu, Martin Simonovsky
 
-functions for writing and reading features and superpoint graph
+Functions for writing and reading features and superpoint graph.
+Functions used for visualisation (label definition in get_color_from_label).
+If a new dataset is used, a new function read_datasetname_format should be created to format the data and the label (remove RGB, adapt the number of labels, adapt the folder format ...). 
 
+Notes:
+ - The object_name_to_label function defines the classes which will be used in the dataset.
+ - The s3dis_formatted dataset has 6 classes but 7 are written in object_name_to_formatted_label. This is due to the function spg_reader in learning/spg.py formatting the labels, the first column (= label 0) is considered as unlabeled points that I called unknown. By default, they will have a value -100 and they won't be taken into account for the training.
 """
 import os
 import sys
@@ -144,7 +149,7 @@ def get_color_from_label(object_label, dataset):
             }.get(object_label, -1)
     elif dataset == 's3dis_formatted': #S3DIS without RGB
         object_label = {
-            0: [   0,   0,   0], #'unkown' -> black
+            0: [   0,   0,   0], #'unknown' -> black
             1: [ 233, 233, 229], #'other'  ->  light grey
             2: [ 233, 229, 107], #'ceiling' .-> .yellow
             3: [  95, 156, 196], #'floor' .-> . blue
@@ -283,7 +288,7 @@ def object_name_to_label(object_class):
 def object_name_to_formatted_label(object_class):
     """convert from object name in S3DIS to an int"""
     object_label = {
-        'unkown':0,
+        'unknown':0,
         'other':1,
         'ceiling': 2,
         'floor': 3,

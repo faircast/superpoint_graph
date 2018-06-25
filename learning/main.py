@@ -2,6 +2,9 @@
     Large-scale Point Cloud Semantic Segmentation with Superpoint Graphs
     http://arxiv.org/abs/1711.09869
     2017 Loic Landrieu, Martin Simonovsky
+
+Main script to run inference and training
+You have to create a datasetname_dataset.py script in learning/ to create and format your dataset. The s3dis_formatted_dataset.py script is an example of a formating with few labels and no RGB data.
 """
 from __future__ import division
 from __future__ import print_function

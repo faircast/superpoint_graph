@@ -3,7 +3,9 @@
     http://arxiv.org/abs/1711.09869
     2017 Loic Landrieu, Martin Simonovsky
     
-this functions outputs varied ply file to visualize the different steps
+this functions outputs varied ply file to visualize the different steps (including the predictions for a given room)
+It is necessary to create a read_datasetname_format function (from provider) to format the labels and the predictions.
+The number of classes for the s3dis_formatted dataset is fixed to 7 instead of 6 to feat the code, see note in provider.py
 """
 import os.path
 import numpy as np
