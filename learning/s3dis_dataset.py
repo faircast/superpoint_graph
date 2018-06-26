@@ -25,14 +25,17 @@ def get_datasets(args, test_seed_offset=0):
 
     # Load superpoints graphs
     testlist, trainlist = [], []
+    #Changed by Arthur#
     # for n in range(1,7):
     for n in ["custom"]:
         if n != args.cvfold:
+            #Changed by Arthur#
             # path = '{}/superpoint_graphs/Area_{:d}/'.format(args.S3DIS_PATH, n)
             path = '{}/superpoint_graphs/Area_{}/'.format(args.S3DIS_PATH, n)
             for fname in sorted(os.listdir(path)):
                 if fname.endswith(".h5"):
                     trainlist.append(spg.spg_reader(args, path + fname, True))
+    #Changed by Arthur#
     # path = '{}/superpoint_graphs/Area_{:d}/'.format(args.S3DIS_PATH, args.cvfold)
     path = '{}/superpoint_graphs/Area_{}/'.format(args.S3DIS_PATH, "custom")
     for fname in sorted(os.listdir(path)):
@@ -70,8 +73,10 @@ def get_info(args):
 def preprocess_pointclouds(S3DIS_PATH):
     """ Preprocesses data by splitting them by components and normalizing."""
 
+    #Changed by Arthur#
     # for n in range(1,7):
     for n in ["custom"]:
+        #Changed by Arthur#
         # pathP = '{}/parsed/Area_{:d}/'.format(S3DIS_PATH, n)
         # pathD = '{}/features/Area_{:d}/'.format(S3DIS_PATH, n)
         # pathC = '{}/superpoint_graphs/Area_{:d}/'.format(S3DIS_PATH, n)

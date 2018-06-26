@@ -61,6 +61,7 @@ if not os.path.isdir(ply_folder ):
 if (not os.path.isfile(fea_file)) :
     raise ValueError("%s does not exist and is needed" % fea_file)
 
+#Changed by Arthur#
 # Compute features for non RGB dataset
 if args.dataset == 's3dis_formatted':
     geof, xyz, graph_nn, labels = read_features(fea_file, isRGB=False)
@@ -89,9 +90,6 @@ if rgb_out:
     
 if gt_out: 
     print("writing the GT file...")
-    # if args.dataset == 's3dis_formatted':
-        # prediction2ply(ply_file + "_GT.ply", xyz, labels, n_labels+1, args.dataset)
-    # else:
     prediction2ply(ply_file + "_GT.ply", xyz, labels, n_labels, args.dataset)
     
 if fea_out:

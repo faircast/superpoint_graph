@@ -57,7 +57,8 @@ def geof2ply(filename, xyz, geof):
 #------------------------------------------------------------------------------
 def prediction2ply(filename, xyz, prediction, n_label, dataset):
     """write a ply with colors for each class"""
-    if not isinstance(prediction, list):
+    #Changed by Arthur#
+    if not isinstance(prediction, list): 
         if len(prediction.shape) > 1 and prediction.shape[1] > 1:
             prediction = np.argmax(prediction, axis=1)
     else:
@@ -80,6 +81,7 @@ def prediction2ply(filename, xyz, prediction, n_label, dataset):
 #------------------------------------------------------------------------------
 def error2ply(filename, xyz, rgb, labels, prediction):
     """write a ply with green hue for correct classifcation and red for error"""
+    #Changed by Arthur#
     if not isinstance(prediction, list):
         if len(prediction.shape) > 1 and prediction.shape[1] > 1:
             prediction = np.argmax(prediction, axis=1)
@@ -87,6 +89,7 @@ def error2ply(filename, xyz, rgb, labels, prediction):
         if len(prediction) > 1:
             prediction = np.argmax(predictioon, axis=1)
 
+    #Changed by Arthur#
     if not isinstance(labels, list):
         if len(labels.shape) > 1 and labels.shape[1] > 1:
             labels = np.argmax(labels, axis = 1)
@@ -209,6 +212,7 @@ def get_color_from_label(object_label, dataset):
     if object_label == -1:
         raise ValueError('Type not recognized: %s' % (object_label))
     return object_label
+
 #------------------------------------------------------------------------------
 def read_s3dis_format(raw_path, label_out=True):
 #S3DIS specific
@@ -216,6 +220,7 @@ def read_s3dis_format(raw_path, label_out=True):
     room_ver = genfromtxt(raw_path, delimiter=' ')
     xyz = np.array(room_ver[:, 0:3], dtype='float32')
     rgb = np.array(room_ver[:, 3:6], dtype='uint8')
+    #Changed by Arthur#
     if not label_out:
         return xyz, rgb
     n_ver = len(room_ver)
@@ -239,7 +244,7 @@ def read_s3dis_format(raw_path, label_out=True):
 
 #------------------------------------------------------------------------------
 def read_s3dis_formatted_format(raw_path, label_out=True):
-#S3DIS specific
+#S3DIS formatted specific (no RGB)
     """extract data from a room folder"""
     room_ver = genfromtxt(raw_path, delimiter=' ')
     xyz = np.array(room_ver[:, 0:3], dtype='float32')
@@ -477,7 +482,7 @@ def read_features(file_name, isRGB=True):
     geof[:, 2] = data_file["scattering"]
     geof[:, 3] = data_file["verticality"]
     xyz = data_file["xyz"][:]
-    if isRGB:
+    if isRGB: #Changed by Arthur#
         rgb = data_file["rgb"][:]
     source = data_file["source"][:]
     target = data_file["target"][:]
@@ -487,7 +492,7 @@ def read_features(file_name, isRGB=True):
     graph_nn["source"] = source
     graph_nn["target"] = target
     graph_nn["distances"] = distances
-    if isRGB:
+    if isRGB:  #Changed by Arthur#
         return geof, xyz, rgb, graph_nn, labels
     else:
         return geof, xyz, graph_nn, labels

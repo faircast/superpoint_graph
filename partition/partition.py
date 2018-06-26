@@ -49,6 +49,7 @@ extension_path = args.extension_path
 root = args.ROOT_PATH+'/'
 #list of subfolders to be processed
 if args.dataset == 's3dis':
+    #Changed by Arthur#
     # folders = ["Area_1/", "Area_2/", "Area_3/", "Area_4/", "Area_5/", "Area_6/"]
     folders = ["Area_custom/"] # *** Change folder for custom dataset (only one room)
     n_labels = 13
@@ -166,7 +167,7 @@ for folder in folders:
         #--- build the geometric feature file h5 file ---
         if os.path.isfile(fea_file) and not args.overwrite:
             print("    reading the existing feature file...")
-            if args.dataset=='s3dis_formatted':
+            if args.dataset=='s3dis_formatted': #Changed by Arthur#
                 geof, xyz, graph_nn, labels = read_features(fea_file, isRGB=False)
             else:
                 geof, xyz, rgb, graph_nn, labels = read_features(fea_file)

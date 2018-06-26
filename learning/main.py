@@ -288,6 +288,7 @@ def main():
             o_cpu, t_cpu, tvec_cpu = filter_valid(o_cpu, t_cpu, tvec_cpu)
             if t_cpu.size > 0:
                 acc_meter.add(o_cpu, t_cpu)
+                #Changed by Arthur#
                 # *** WARNING: confusion matrix is commented for the ONERD because it doesn't have any label
                 # confusion_matrix.count_predicted_batch(tvec_cpu, np.argmax(o_cpu,1))
 

@@ -218,6 +218,7 @@ def load_superpoint(args, fname, id, train, test_seed_offset):
 
     if args.pc_attribs != '':
         columns = []
+        #Changed by Arthur#
         """
         if 'xyz' in args.pc_attribs: columns.append(P[:,:3])
         if 'rgb' in args.pc_attribs: columns.append(P[:,3:6])

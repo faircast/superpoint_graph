@@ -12,9 +12,11 @@ This is the official PyTorch implementation of our paper *Large-scale Point Clou
 * `./learning/*` - Learning code (superpoint embedding and contextual segmentation).
 
 Scripts you will use:
- - `./partition/partition.py` - Script to generate SPG and create features, it uses functions of `./partition/provider.py`
- - `./learning/main.py` - Script to train models or to infer on a dataset, it uses functions of `./learninge/spg.py` and `./learning/datasetname_dataset.py` (you should create this second script to preprocess your dataset)
+ - `./partition/partition.py` - Script to generate SPG and create features, it uses functions of `./partition/provider.py` (script containing functions towrite and read features and spg, format labels and write ply files)
+ - `./learning/main.py` - Script to train models or to infer on a dataset, it uses functions of `./learninge/spg.py` (script to compute spg and create features) and `./learning/datasetname_dataset.py` (you should create this second script to preprocess your dataset)
   - `./partition/visualize.py` - Script to generate .ply files to visualize the results (ground truth, predictions, errors ...). It uses functions of `./partition/provider.py`
+
+Note: the flags `#Changed by Arthur` in the code indicates critical replacements
 
 ## Requirements
 
